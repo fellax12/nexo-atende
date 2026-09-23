@@ -31,4 +31,45 @@ jobs:
           rm -rf Nexo-Atende-0.4.0
           unzip -q Nexo-Atende-0.4.0.zip
           test -f Nexo-Atende-0.4.0/settings.gradle
-          test -
+          test -f Nexo-Atende-0.4.0/app/build.gradle
+          echo "Projeto Nexo Atende 0.4.0 encontrado."
+
+      - name: Corrigir codigo Java
+        working-directory: Nexo-Atende-0.4.0
+        run: |
+          FILE="app/src/main/java/br/com/nexo/atende/MainActivity.java"
+
+          if ! grep -q "import android.widget.Toast;" "$FILE"; then
+            sed -i '/^package br.com.nexo.atende;/a import android.widget.Toast;' "$FILE"
+          fi
+
+          echo "Verificando import do Toast:"
+          grep "import android.widget.Toast;" "$FILE"
+
+      - name: Instalar Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.9'
+
+      - name: Compilar Nexo Atende 0.4.0
+        working-directory: Nexo-Atende-0.4.0
+        run: |
+          gradle --no-daemon :app:assembleDebug
+
+      - name: Verificar APK
+        run: |
+          test -f Nexo-Atende-0.4.0/app/build/outputs/apk/debug/app-debug.apk
+          echo "APK Nexo Atende 0.4.0 compilado com sucesso."
+
+      - name: Preparar APK final
+        run: |
+          cp Nexo-Atende-0.4.0/app/build/outputs/apk/debug/app-debug.apk Nexo-Atende-0.4.0.apk
+          ls -lh Nexo-Atende-0.4.0.apk
+
+      - name: Enviar APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: Nexo-Atende-0.4.0-APK
+          path: Nexo-Atende-0.4.0.apk
+          if-no-files-found: error
+          retention-days: 7

@@ -28,14 +28,14 @@ jobs:
 
       - name: Extrair projeto Nexo Atende
         run: |
-          rm -rf Nexo-Atende-0.1.3-reconstruido
-          unzip -q Nexo-Atende-0.1.3-reconstruido.zip
-          test -f Nexo-Atende-0.1.3-reconstruido/settings.gradle
-          test -f Nexo-Atende-0.1.3-reconstruido/app/build.gradle
-          echo "Projeto Nexo encontrado."
+          rm -rf Nexo-Atende-0.3.0
+          unzip -q Nexo-Atende-0.3.0.zip
+          test -f Nexo-Atende-0.3.0/settings.gradle
+          test -f Nexo-Atende-0.3.0/app/build.gradle
+          echo "Projeto Nexo Atende 0.3.0 encontrado."
 
       - name: Corrigir codigo Java
-        working-directory: Nexo-Atende-0.1.3-reconstruido
+        working-directory: Nexo-Atende-0.3.0
         run: |
           FILE="app/src/main/java/br/com/nexo/atende/MainActivity.java"
 
@@ -52,24 +52,18 @@ jobs:
           gradle-version: '8.9'
 
       - name: Compilar Nexo Atende
-        working-directory: Nexo-Atende-0.1.3-reconstruido
+        working-directory: Nexo-Atende-0.3.0
         run: |
           gradle --no-daemon :app:assembleDebug
 
       - name: Verificar APK
         run: |
-          test -f Nexo-Atende-0.1.3-reconstruido/app/build/outputs/apk/debug/app-debug.apk
-          echo "APK compilado com sucesso."
+          test -f Nexo-Atende-0.3.0/app/build/outputs/apk/debug/app-debug.apk
+          echo "APK Nexo Atende 0.3.0 compilado com sucesso."
 
       - name: Preparar APK final
         run: |
-          cp Nexo-Atende-0.1.3-reconstruido/app/build/outputs/apk/debug/app-debug.apk Nexo-Atende-0.1.3.apk
-          ls -lh Nexo-Atende-0.1.3.apk
+          cp Nexo-Atende-0.3.0/app/build/outputs/apk/debug/app-debug.apk Nexo-Atende-0.3.0.apk
+          ls -lh Nexo-Atende-0.3.0.apk
 
       - name: Enviar APK
-        uses: actions/upload-artifact@v4
-        with:
-          name: Nexo-Atende-0.1.3-APK
-          path: Nexo-Atende-0.1.3.apk
-          if-no-files-found: error
-          retention-days: 7

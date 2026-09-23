@@ -38,6 +38,12 @@ jobs:
         with:
           gradle-version: '8.9'
 
+                - name: Corrigir codigo Java
+        working-directory: Nexo-Atende-0.1.3-reconstruido
+        run: |
+          sed -i '/import android.webkit.WebView;/a import android.widget.Toast;' app/src/main/java/br/com/nexo/atende/MainActivity.java
+          grep "android.widget.Toast" app/src/main/java/br/com/nexo/atende/MainActivity.java
+
       - name: Compilar Nexo Atende
         working-directory: Nexo-Atende-0.1.3-reconstruido
         run: |

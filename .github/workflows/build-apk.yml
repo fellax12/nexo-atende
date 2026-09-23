@@ -14,44 +14,43 @@ jobs:
       - name: Baixar repositorio
         uses: actions/checkout@v4
 
-      - name: Configurar Java 17
+      - name: Configurar Java
         uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: '17'
 
-      - name: Configurar Android SDK
-        uses: android-actions/setup-android@v3
-
-      - name: Instalar Android 35
+      - name: Preparar Android SDK
         run: |
-          yes | sdkmanager --licenses > /dev/null || true
-          sdkmanager "platforms;android-35" "build-tools;35.0.0"
+          echo "ANDROID_HOME=$ANDROID_HOME"
+          yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses > /dev/null || true
+          $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "platforms;android-35" "build-tools;35.0.0"
 
-      - name: Extrair Nexo Atende
+      - name: Localizar projeto
         run: |
           unzip -q Nexo-Atende-0.1.3-reconstruido.zip
-          test -f Nexo-Atende-0.1.3-reconstruido/app/build.gradle
           test -f Nexo-Atende-0.1.3-reconstruido/settings.gradle
+          test -f Nexo-Atende-0.1.3-reconstruido/app/build.gradle
+          echo "Projeto Nexo encontrado."
 
-      - name: Instalar Gradle 8.9
+      - name: Instalar Gradle
         uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: '8.9'
 
-      - name: Compilar APK
+      - name: Compilar Nexo Atende
         working-directory: Nexo-Atende-0.1.3-reconstruido
-        run: gradle --no-daemon :app:assembleDebug
+        run: |
+          gradle --no-daemon :app:assembleDebug
 
-      - name: Preparar APK
+      - name: Preparar APK final
         run: |
           cp Nexo-Atende-0.1.3-reconstruido/app/build/outputs/apk/debug/app-debug.apk Nexo-Atende-0.1.3.apk
-          test -f Nexo-Atende-0.1.3.apk
+          ls -lh Nexo-Atende-0.1.3.apk
 
-      - name: Disponibilizar APK
+      - name: Enviar APK
         uses: actions/upload-artifact@v4
         with:
           name: Nexo-Atende-0.1.3-APK
           path: Nexo-Atende-0.1.3.apk
           if-no-files-found: error
-          retention-days: 7

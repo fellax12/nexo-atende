@@ -26,15 +26,12 @@ jobs:
           yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses > /dev/null || true
           $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "platforms;android-35" "build-tools;35.0.0"
 
-      - name: Extrair projeto Nexo Atende
+      - name: Extrair projeto Nexo Atende 0.4.0
         run: |
-          rm -rf Nexo-Atende-0.3.0
-          unzip -q Nexo-Atende-0.3.0.zip
-          test -f Nexo-Atende-0.3.0/settings.gradle
-          test -f Nexo-Atende-0.3.0/app/build.gradle
-          echo "Projeto Nexo Atende 0.3.0 encontrado."
-
-      - name: Corrigir codigo Java
+          rm -rf Nexo-Atende-0.4.0
+          unzip -q Nexo-Atende-0.4.0.zip
+          test -f Nexo-Atende-0.4.0/settings.gradle
+          test -      - name: Corrigir codigo Java
         working-directory: Nexo-Atende-0.3.0
         run: |
           FILE="app/src/main/java/br/com/nexo/atende/MainActivity.java"

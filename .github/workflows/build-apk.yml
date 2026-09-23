@@ -67,3 +67,9 @@ jobs:
           ls -lh Nexo-Atende-0.3.0.apk
 
       - name: Enviar APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: Nexo-Atende-0.3.0-APK
+          path: Nexo-Atende-0.3.0.apk
+          if-no-files-found: error
+          retention-days: 7

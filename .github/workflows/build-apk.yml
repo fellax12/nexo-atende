@@ -26,28 +26,40 @@ jobs:
           yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses > /dev/null || true
           $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "platforms;android-35" "build-tools;35.0.0"
 
-      - name: Localizar projeto
+      - name: Extrair projeto Nexo Atende
         run: |
+          rm -rf Nexo-Atende-0.1.3-reconstruido
           unzip -q Nexo-Atende-0.1.3-reconstruido.zip
           test -f Nexo-Atende-0.1.3-reconstruido/settings.gradle
           test -f Nexo-Atende-0.1.3-reconstruido/app/build.gradle
           echo "Projeto Nexo encontrado."
+
+      - name: Corrigir codigo Java
+        working-directory: Nexo-Atende-0.1.3-reconstruido
+        run: |
+          FILE="app/src/main/java/br/com/nexo/atende/MainActivity.java"
+
+          if ! grep -q "import android.widget.Toast;" "$FILE"; then
+            sed -i '/^package br.com.nexo.atende;/a import android.widget.Toast;' "$FILE"
+          fi
+
+          echo "Verificando import do Toast:"
+          grep "import android.widget.Toast;" "$FILE"
 
       - name: Instalar Gradle
         uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: '8.9'
 
-                - name: Corrigir codigo Java
-        working-directory: Nexo-Atende-0.1.3-reconstruido
-        run: |
-          sed -i '/import android.webkit.WebView;/a import android.widget.Toast;' app/src/main/java/br/com/nexo/atende/MainActivity.java
-          grep "android.widget.Toast" app/src/main/java/br/com/nexo/atende/MainActivity.java
-
       - name: Compilar Nexo Atende
         working-directory: Nexo-Atende-0.1.3-reconstruido
         run: |
           gradle --no-daemon :app:assembleDebug
+
+      - name: Verificar APK
+        run: |
+          test -f Nexo-Atende-0.1.3-reconstruido/app/build/outputs/apk/debug/app-debug.apk
+          echo "APK compilado com sucesso."
 
       - name: Preparar APK final
         run: |
@@ -60,3 +72,4 @@ jobs:
           name: Nexo-Atende-0.1.3-APK
           path: Nexo-Atende-0.1.3.apk
           if-no-files-found: error
+          retention-days: 7
